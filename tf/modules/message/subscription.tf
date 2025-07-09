@@ -9,14 +9,14 @@ resource "aws_sns_topic_subscription" "sub_worker_input_queue" {
   ]
 }
 
-resource "aws_sns_topic_subscription" "sub_worker_output_queue" {
+resource "aws_sns_topic_subscription" "sub_notification_output_queue" {
   topic_arn = aws_sns_topic.output_topic.arn
   protocol  = "sqs"
-  endpoint  = aws_sqs_queue.worker_output_queue.arn
+  endpoint  = aws_sqs_queue.notification_output_queue.arn
 
   depends_on = [
     aws_sns_topic.output_topic,
-    aws_sqs_queue.worker_output_queue,
+    aws_sqs_queue.notification_output_queue,
   ]
 }
 
