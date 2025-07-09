@@ -10,8 +10,8 @@ resource "aws_sqs_queue" "worker_input_queue" {
   ]
 }
 
-resource "aws_sqs_queue" "worker_output_queue" {
-  name                       = "WorkerOutputQueue"
+resource "aws_sqs_queue" "notification_output_queue" {
+  name                       = "NotificationOutputQueue"
   visibility_timeout_seconds = 30
   message_retention_seconds  = 86400
   delay_seconds              = 1
@@ -70,8 +70,8 @@ resource "aws_sqs_queue_policy" "worker_input_queue_policy" {
   ]
 }
 
-resource "aws_sqs_queue_policy" "worker_output_queue_policy" {
-  queue_url = aws_sqs_queue.worker_output_queue.url
+resource "aws_sqs_queue_policy" "notification_output_queue_policy" {
+  queue_url = aws_sqs_queue.notification_output_queue.url
 
   policy = jsonencode({
     Version = "2012-10-17",
@@ -79,7 +79,7 @@ resource "aws_sqs_queue_policy" "worker_output_queue_policy" {
       Effect    = "Allow",
       Principal = "*",
       Action    = "sqs:SendMessage",
-      Resource  = aws_sqs_queue.worker_output_queue.arn,
+      Resource  = aws_sqs_queue.notification_output_queue.arn,
       Condition = {
         ArnEquals = {
           "aws:SourceArn" = aws_sns_topic.output_topic.arn
@@ -90,7 +90,7 @@ resource "aws_sqs_queue_policy" "worker_output_queue_policy" {
 
   depends_on = [
     aws_sns_topic.output_topic,
-    aws_sqs_queue.worker_input_queue
+    aws_sqs_queue.notification_output_queue
   ]
 }
 
@@ -138,6 +138,6 @@ resource "aws_sqs_queue_policy" "api_output_queue_policy" {
 
   depends_on = [
     aws_sns_topic.output_topic,
-    aws_sqs_queue.api_input_queue
+    aws_sqs_queue.api_output_queue
   ]
 }
